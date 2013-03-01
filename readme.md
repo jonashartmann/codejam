@@ -1,6 +1,5 @@
-# Google code jam repository
+# Google code jam practice repository
 This repository is responsible for storing all the code I create while training for the code jam.
-After each round, I will be commiting my solutions here.
 
 This repository and all the code found inside of it is released to the public under the following license.
 # The MIT License (MIT)
