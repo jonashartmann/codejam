@@ -1,0 +1,3 @@
+*.sublime*
+*.out
+node_modules

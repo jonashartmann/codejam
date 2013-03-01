@@ -1,0 +1,6 @@
+5
+this is a test
+foobar
+all your base
+a
+a very big word is made of letters and some other kind of things now try to reverse this and lets see how long it takes
