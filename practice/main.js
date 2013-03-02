@@ -18,6 +18,7 @@ var worker = require('./' + workerDir + '/worker');
 
 var outStream = fs.createWriteStream(workerDir+'.out');
 outStream.on('close', function() {
+	console.log('%d lines read...', lineNumber);
 	console.log('May the force be with you!');
 	process.exit(0);
 });
@@ -38,7 +39,7 @@ var parser = hasCustomParser ? function parse(line) {
 : function parser(line) {
 	if (lineNumber === 0) {
 		cases = line.trim();
-		console.log('Number of cases: %d', cases);
+		console.log('%d cases to work on...', cases);
 	} else {
 		var product = worker.work(line.trim(), caseLine++);
 		if (product !== null) {
