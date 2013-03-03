@@ -8,6 +8,9 @@ var worker = (function() {
 	var n = 0;
 	var k = 0;
 	var board = [];
+	var blueWon = false;
+	var redWon = false;
+	var curTeam = '';
 
 	function parseLine(line){
 		// pass true in the command line to use this to parse each line
@@ -76,50 +79,66 @@ var worker = (function() {
 		return newRow.join('');
 	}
 
+
+
 	function whoWon() {
-		console.log('k=%d board: ',k, board);
-		var blueRow = maxRow(board,'B', board.length-1, board.length-1);
-		var redRow = maxRow(board,'R', board.length-1, board.length-1);
-		console.log('Blue: %d  Red: %d', blueRow, redRow);
-		var blueWon = blueRow >= k;
-		var redWon = redRow >= k;
+		// console.log('k=%d',k);
+		// printBoard();
+
+		var range = [ [0,1], [1,0], [-1,0], [0,-1], [-1,-1], [-1,1], [1,1], [1,-1] ];
+		var stop = false;
+		for (var row = 0; row < board.length && !stop; row++) {
+			for (var col = 0; col <board.length && !stop; col++) {
+				for (var i = 0; i < 8; i++) {
+					if (board[row][col] != '.') {
+						countRow(row, col, range[i][0], range[i][1], 0);
+						if (redWon && blueWon) stop = true;
+					} else {
+						break;
+					}
+				}
+			}
+		}
+
 		return (blueWon && redWon) ? 'Both' : (blueWon ? 'Blue' : (redWon ? 'Red' : 'Neither'));
 	}
 
-	function maxRow(board, team, row, col, dir) {
-		if (row < 0 || col < 0 || row >= board.length || col >= board.length) {
-			return 0;
+	function countRow(row, col, r, c, val) {
+		if (val === 0) {
+			curTeam = board[row][col];
+			countRow(row+r, col+c, r, c, 1);
+		} else {
+			if (row >= 0 && row < board.length && col >= 0 && col < board.length) {
+				if (board[row][col] == curTeam) {
+					if (val + 1 === k) {
+						if (curTeam == 'B') {
+							blueWon = true;
+						} else {
+							redWon = true;
+						}
+					} else {
+						countRow(row+r, col+c, r, c, val + 1);
+					}
+				}
+			}
 		}
-
-		if (board[row][col] != team) {
-			return Math.max(0 + maxRow(board, team, row-1, col, 'UP'),
-							0 + maxRow(board, team, row, col-1, 'LEFT'),
-							0 + maxRow(board, team, row-1, col-1, 'UPLEFT'),
-							0 + maxRow(board, team, row+1, col, 'DOWN'),
-							0 + maxRow(board, team, row, col+1, 'RIGHT'),
-							0 + maxRow(board, team, row+1, col+1, 'DOWNRIGHT'),
-							0 + maxRow(board, team, row-1, col+1, 'UPRIGHT'),
-							0 + maxRow(board, team, row+1, col-1, 'DOWNLEFT'));
-		}
-
-		return Math.max(keepDirection(dir, 'UP') ? 1 : 0) + maxRow(board, team, row-1, col, 'UP'),
-						keepDirection(dir, 'LEFT') ? 1 : 0) + maxRow(board, team, row, col-1, 'LEFT'),
-						(dir == 'UPLEFT') ? 1 : 0) + maxRow(board, team, row-1, col-1, 'UPLEFT'),
-						(dir == 'DOWN') ? 1 : 0) + maxRow(board, team, row+1, col, 'DOWN'),
-						(dir == 'RIGHT') ? 1 : 0) + maxRow(board, team, row, col+1, 'RIGHT'),
-						(dir == 'DOWNRIGHT') ? 1 : 0) + maxRow(board, team, row+1, col+1, 'DOWNRIGHT'),
-						(dir == 'UPRIGHT') ? 1 : 0) + maxRow(board, team, row-1, col+1, 'UPRIGHT'),
-						(dir == 'DOWNLEFT') ? 1 : 0) + maxRow(board, team, row+1, col-1, 'DOWNLEFT'));
 	}
 
-	function keepDirection(dir, newDir) {
-		return dir == newDir;
+	function printBoard() {
+		console.log('-- BOARD --');
+		for (var i = 0; i < board.length; i++) {
+			console.log(board[i]);
+		}
+		console.log('-----------');
 	}
 
 	function reset() {
 		n = 0;
 		k = 0;
 		board = [];
+		blueWon = false;
+		redWon = false;
+		curTeam = '';
 	}
 
 	return worker;
