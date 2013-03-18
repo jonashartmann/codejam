@@ -19,6 +19,10 @@ var worker = (function() {
 				return 'ERROR';
 		}
 	}
+    
+    function reset() {
+    	// Reset anything needed
+	}
 
 	return worker;
 })();
